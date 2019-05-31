@@ -6,7 +6,7 @@
                 <v-container>
                     <v-layout justify-center>
                         <v-flex xs12 md7 lg5>
-                            <v-text-field clearable :disabled="off" @input="filter = 'searching'" v-model="search" color="#66BB6A" label="Search..." outline></v-text-field>
+                            <v-text-field clearable :disabled="off" @input="filter = 'searching'" v-model.trim="search" color="#66BB6A" label="Search..." outline></v-text-field>
                         </v-flex>
                     </v-layout>
                     <v-layout justify-center>
@@ -14,7 +14,7 @@
                             <v-icon color="#66BB6A">{{icon}}</v-icon>
                         </v-btn>
                         <v-flex xs12 md5 lg4>
-                            <v-text-field clearable color="secondary" type="text" ref="todoTitle" v-model="todo" @keydown.enter="addTodo" label="Solo" placeholder="What needs to be done?" solo></v-text-field>
+                            <v-text-field clearable color="secondary" type="text" ref="todoTitle" v-model.trim="todo" @keydown.enter="addTodo" label="Solo" placeholder="What needs to be done?" solo></v-text-field>
                         </v-flex>
                     </v-layout>
                     <v-layout justify-center>
@@ -28,7 +28,7 @@
                                             </v-list-tile-action>
                                             <v-list-tile-content>
                                                 <v-list-tile-title @click="edit(item)" :class="{'completed-text': item.completed}">{{item.title}}</v-list-tile-title>
-                                                <v-text-field @keydown.enter="editDone(item)" @keydown.esc="editHide(item)" @blur="editHide(item)" v-focus class="app__field" v-show="item.editField" v-model="item.title" solo></v-text-field>
+                                                <v-text-field @keydown.enter="editDone(item)" @keydown.esc="editHide(item)" @blur="editHide(item)" v-focus class="app__field" v-show="item.editField" v-model.trim="item.title" solo></v-text-field>
                                             </v-list-tile-content>
                                             <v-list-tile-action>
                                                 <v-btn @click="removeTodo(index)" color="red" small dark fab flat>
@@ -36,7 +36,7 @@
                                                 </v-btn>
                                             </v-list-tile-action>
                                         </v-list-tile>
-                                        <v-list-tile>
+                                        <v-list-tile class="app__tabs">
                                             <v-list-tile-content>
                                                 <v-tabs slider-color="success">
                                                     <v-tab @click="filter = 'all'" class="success--text">All</v-tab>
@@ -44,9 +44,9 @@
                                                     <v-tab @click="filter = 'completed'" class="success--text">Completed</v-tab>
                                                 </v-tabs>
                                             </v-list-tile-content>
-                                            <v-list-tile-action>
-                                                <v-list-tile-title>{{completeTodo()}} items left</v-list-tile-title>
-                                            </v-list-tile-action>
+                                        </v-list-tile>
+                                        <v-list-tile>
+                                            <v-list-tile-title>{{completeTodo()}} items left</v-list-tile-title>
                                         </v-list-tile>
                                     </v-list>
                                 </v-card>
@@ -110,7 +110,7 @@ export default {
             }
         },
         removeTodo(index) {
-            this.$delete(this.todoList, index)
+            this.$delete(this.todoList, index);
             if (this.todoList.length === 0) {
                 this.icon = 'check_box_outline_blank'
             }
@@ -135,13 +135,21 @@ export default {
             item.disabled = true
         },
         editDone(item) {
-            item.title = item.title;
+            if (item.title === '') {
+                return
+            } else {
+                item.title = item.title
+            };
             item.disabled = false;
             item.editField = false
         },
         editHide(item) {
-            item.disabled = false;
-            item.editField = false
+            if (item.title === '') {
+                return
+            } else {
+                item.disabled = false;
+                item.editField = false
+            }
         },
         checkAll() {
             if (this.filters.active(this.todoList).length === 0) {
@@ -219,6 +227,8 @@ $mainColor: #66BB6A;
     &__card {
         margin-bottom: 20px;
     }
+
+    &__tabs {}
 }
 
 .fade-enter {
