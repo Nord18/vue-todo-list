@@ -28,7 +28,7 @@
                                             </v-list-tile-action>
                                             <v-list-tile-content>
                                                 <v-list-tile-title @click="edit(item)" :class="{'completed-text': item.completed}">{{item.title}}</v-list-tile-title>
-                                                <v-text-field @keydown.enter="editDone(item)" @keydown.esc="editHide(item)" @blur="editHide(item)" v-focus class="app__field" v-show="item.editField" v-model.trim="item.title" solo></v-text-field>
+                                                <v-text-field :hint="item.hint" @keydown.enter="editDone(item)" @keydown.esc="editHide(item)" @blur="editHide(item)" v-focus class="app__field" v-show="item.editField" v-model.trim="item.title" solo></v-text-field>
                                             </v-list-tile-content>
                                             <v-list-tile-action>
                                                 <v-btn @click="removeTodo(index)" color="red" small dark fab flat>
@@ -36,7 +36,7 @@
                                                 </v-btn>
                                             </v-list-tile-action>
                                         </v-list-tile>
-                                        <v-list-tile class="app__tabs">
+                                        <v-list-tile>
                                             <v-list-tile-content>
                                                 <v-tabs slider-color="success">
                                                     <v-tab @click="filter = 'all'" class="success--text">All</v-tab>
@@ -102,6 +102,7 @@ export default {
                     id: Math.random(),
                     disabled: false,
                     editField: false,
+                    hint: '',
                     completed: false
                 })
                 this.todo = '';
@@ -134,22 +135,22 @@ export default {
             item.editField = true;
             item.disabled = true
         },
-        editDone(item) {
+        validateTitle(item) {
             if (item.title === '') {
+                item.hint = 'This field is required';
                 return
             } else {
-                item.title = item.title
-            };
-            item.disabled = false;
-            item.editField = false
-        },
-        editHide(item) {
-            if (item.title === '') {
-                return
-            } else {
+                item.hint = '';
                 item.disabled = false;
                 item.editField = false
-            }
+            };
+        },
+        editDone(item) {
+            return this.validateTitle(item);
+            item.title = item.title
+        },
+        editHide(item) {
+            return this.validateTitle(item)
         },
         checkAll() {
             if (this.filters.active(this.todoList).length === 0) {
@@ -191,7 +192,7 @@ export default {
 
 </script>
 <style lang="scss" scoped>
-@import '~vuetify/dist/vuetify.min.css';
+@import '~vuetify/dist/vuetify.css';
 
 $mainColor: #66BB6A;
 
@@ -227,8 +228,6 @@ $mainColor: #66BB6A;
     &__card {
         margin-bottom: 20px;
     }
-
-    &__tabs {}
 }
 
 .fade-enter {
