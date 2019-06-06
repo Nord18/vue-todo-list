@@ -46,7 +46,7 @@
                                             </v-list-tile-content>
                                         </v-list-tile>
                                         <v-list-tile>
-                                            <v-list-tile-title>{{completeTodo()}} items left</v-list-tile-title>
+                                            <v-list-tile-title>{{completeTodo}} items left</v-list-tile-title>
                                         </v-list-tile>
                                     </v-list>
                                 </v-card>
@@ -116,9 +116,6 @@ export default {
                 this.icon = 'check_box_outline_blank'
             }
         },
-        completeTodo() {
-            return this.filters.active(this.todoList).length
-        },
         clearCompleted() {
             this.todoList = this.filters.active(this.todoList);
             this.show = false;
@@ -171,6 +168,9 @@ export default {
     computed: {
         filterTodo() {
             return this.filters[this.filter](this.todoList);
+        },
+        completeTodo() {
+            return this.filters.active(this.todoList).length
         }
     },
     directives: {
